@@ -2,11 +2,11 @@ package org.example.library.domain;
 
 import org.example.library.contracts.Borrowable;
 import org.example.library.contracts.Searchable;
-
+import org.example.library.contracts.Identifiable;
 /**
  * Represents a book item in the library.
  */
-public class Book extends LibraryItem implements Borrowable, Searchable {
+public class Book extends LibraryItem implements Borrowable, Searchable,Identifiable<String>  {
 
     protected final String author;
     protected final String isbn;
@@ -17,6 +17,11 @@ public class Book extends LibraryItem implements Borrowable, Searchable {
         super(id, title, yearPublished);
         this.author = author;
         this.isbn = isbn;
+    }
+
+    @Override
+    public String getId() {
+        return id;
     }
 
     public String getAuthor() { return author; }

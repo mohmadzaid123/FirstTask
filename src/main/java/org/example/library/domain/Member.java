@@ -1,6 +1,7 @@
 package org.example.library.domain;
 
 import org.example.library.contracts.Borrowable;
+import org.example.library.contracts.Identifiable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * Represents a library member (aggregation: borrowed items are not owned).
  */
-public class Member {
+public class Member implements Identifiable<String>{
 
     private final String memberId;
     private final String name;
@@ -22,7 +23,10 @@ public class Member {
         this.name = name;
         this.email = email;
     }
-
+    @Override
+    public String getId() {
+        return memberId;
+    }
     public String getMemberId() { return memberId; }
     public String getName() { return name; }
     public String getEmail() { return email; }
