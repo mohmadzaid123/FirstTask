@@ -5,7 +5,7 @@ import org.example.library.contracts.Searchable;
 /**
  * Represents a magazine item in the library.
  */
-public class Magazine extends LibraryItem implements Searchable {
+public class Magazine extends LibraryItem<String> implements Searchable {
 
     private final int issueNumber;
     private final String publisher;

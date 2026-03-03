@@ -1,5 +1,6 @@
 package org.example.library.repositories;
 
+import org.example.library.annotations.Audited;
 import org.example.library.contracts.Identifiable;
 import org.example.library.contracts.Repository;
 
@@ -10,10 +11,11 @@ public class InMemoryRepository<T extends Identifiable<ID>, ID> implements Repos
     protected final Map<ID, T> store = new HashMap<>();
 
     @Override
-    public void save(T entity) {
+    @Audited(action = "SAVE")
+    public synchronized void save(T entity) {
+        if (entity == null) throw new IllegalArgumentException("entity is null");
         store.put(entity.getId(), entity);
     }
-
     @Override
     public Optional<T> findById(ID id) {
         return Optional.ofNullable(store.get(id));
@@ -21,15 +23,19 @@ public class InMemoryRepository<T extends Identifiable<ID>, ID> implements Repos
 
     @Override
     public List<T> findAll() {
-        return new ArrayList<>(store.values());
+        synchronized (store) {
+            return new ArrayList<>(store.values());
+        }
     }
 
     @Override
-    public void delete(ID id) {
+    @Audited(action = "DELETE")
+    public synchronized void delete(ID id) {
+        if (id == null) return;
         store.remove(id);
     }
 
-    // Phase 2.3
+
     public T findByIdOrDefault(ID id, T defaultValue) {
         return findById(id).orElse(defaultValue);
     }
