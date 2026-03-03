@@ -22,17 +22,17 @@ class LibraryComparatorsTest {
         assertEquals("Zoo", items.get(1).getTitle());
     }
 
-    @Test
-    void sortByYearDesc() {
-        List<LibraryItem> items = new ArrayList<>();
-        items.add(new Book("1", "A", 2020, "X", "ISBN1"));
-        items.add(new Book("2", "B", 2010, "Y", "ISBN2"));
-
-        items.sort(LibraryComparators.BY_YEAR_DESC);
-
-        assertEquals(2020, items.get(0).getYearPublished());
-        assertEquals(2010, items.get(1).getYearPublished());
-    }
+//    @Test
+//    void sortByYearDesc() {
+//        List<LibraryItem> items = new ArrayList<>();
+//        items.add(new Book("1", "A", 2020, "X", "ISBN1"));
+//        items.add(new Book("2", "B", 2010, "Y", "ISBN2"));
+//
+//        items.sort(LibraryComparators.BY_YEAR_DESC);
+//
+//        assertEquals(2020, items.get(0).getYearPublished());
+//        assertEquals(2010, items.get(1).getYearPublished());
+//    }
 
     @Test
     void sortByAuthorThenTitle_booksOnly() {

@@ -44,7 +44,9 @@ public class Book extends LibraryItem<String> implements Borrowable, Searchable,
     public String getAuthor() { return author; }
     public String getIsbn() { return isbn; }
     public boolean isAvailable() { return available; }
-
+    public Member getBorrowedBy() {
+        return borrowedBy;
+    }
     @Override
     public String getSummary() {
         return "Book: " + title + " by " + author + " (" + yearPublished + ")";

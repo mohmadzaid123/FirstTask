@@ -9,7 +9,7 @@ public abstract class LibraryItem<TID> {
 
     protected  TID id;
     protected final String title;
-    protected final int yearPublished;
+    protected final  int yearPublished;
 
     public LibraryItem(TID id, String title, int yearPublished) {
         this.id = id;

@@ -17,8 +17,6 @@ public final class LibraryComparators {
             Comparator.comparingInt(LibraryItem::getYearPublished);
 
     // descending by yearPublished
-    public static final Comparator<LibraryItem> BY_YEAR_DESC =
-            Comparator.comparingInt(LibraryItem::getYearPublished).reversed();
 
     // for books only: sort by author, then title
     public static final Comparator<Book> BY_AUTHOR_THEN_TITLE =
