@@ -2,6 +2,8 @@ package org.example.library.domain;
 
 import org.example.library.contracts.Borrowable;
 import org.example.library.contracts.Identifiable;
+import org.example.library.exceptions.InvalidLibraryItemException;
+import org.example.library.exceptions.MemberDidNotBorrowItemException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -32,26 +34,26 @@ public class Member implements Identifiable<String>{
     public String getEmail() { return email; }
 
     public void borrow(Borrowable item) {
-        if (item == null) throw new IllegalArgumentException("item is null");
+        if (item == null) throw new InvalidLibraryItemException();
         if (!(item instanceof LibraryItem li)) {
-            throw new IllegalArgumentException("item must be a LibraryItem");
+            throw new InvalidLibraryItemException(item.getClass());
         }
 
         item.checkOut(this);
+
         if (!borrowedItems.contains(li)) {
             borrowedItems.add(li);
         }
     }
 
     public void returnItem(Borrowable item) {
-        if (item == null) throw new IllegalArgumentException("item is null");
-
+        if (item == null) throw new InvalidLibraryItemException();
         if (!(item instanceof LibraryItem li)) {
-            throw new IllegalArgumentException("item must be a LibraryItem");
+            throw new InvalidLibraryItemException(item.getClass());
         }
 
         if (!borrowedItems.contains(li)) {
-            throw new IllegalStateException("This member did not borrow this item");
+            throw new MemberDidNotBorrowItemException(this, li);
         }
 
         item.returnItem();

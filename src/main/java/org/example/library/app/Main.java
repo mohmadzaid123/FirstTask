@@ -1,8 +1,12 @@
 package org.example.library.app;
 
 import org.example.library.domain.Book;
+import org.example.library.domain.LibraryItem;
 import org.example.library.domain.Member;
+import org.example.library.utils.LibraryPredicates;
 import org.example.library.utils.LibraryUtils;
+
+import java.util.function.Predicate;
 
 public class Main {
     public static void main(String[] args) {
@@ -12,5 +16,10 @@ public class Main {
         m.borrow(b);
         LibraryUtils.printInfo(b, true);
         m.returnItem(b);
+
+        Predicate<LibraryItem> recentAndAvailable =
+                LibraryPredicates.IS_AVAILABLE
+                        .and(LibraryPredicates.PUBLISHED_AFTER(2015));
+
     }
 }

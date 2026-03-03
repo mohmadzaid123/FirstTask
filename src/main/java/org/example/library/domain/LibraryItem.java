@@ -1,27 +1,35 @@
 package org.example.library.domain;
 
+import java.util.Objects;
+
 /**
  * Base abstract type for all library items.
  */
-public abstract class LibraryItem {
+public abstract class LibraryItem<TID> {
 
-    protected final String id;
+    protected  TID id;
     protected final String title;
     protected final int yearPublished;
 
-    public LibraryItem(String id, String title, int yearPublished) {
+    public LibraryItem(TID id, String title, int yearPublished) {
         this.id = id;
         this.title = title;
         this.yearPublished = yearPublished;
     }
 
-    public String getId() { return id; }
+    public TID getId() { return id; }
+    public  void setId(TID id){this.id = id;}
     public String getTitle() { return title; }
     public int getYearPublished() { return yearPublished; }
 
     public abstract String getSummary();
 
     public boolean isAvailable() {
-        return true; // default behavior (you can refine later)
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);
     }
 }
