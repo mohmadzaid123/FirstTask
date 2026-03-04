@@ -1,5 +1,6 @@
 package org.example.library.domain;
 
+import org.example.library.exceptions.ItemAlreadyBorrowedException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,7 +35,7 @@ class BookTest {
         Member m2 = new Member("M2", "B", "b@example.com");
 
         book.checkOut(m1);
-        assertThrows(IllegalStateException.class, () -> book.checkOut(m2));
+        assertThrows(ItemAlreadyBorrowedException.class, () -> book.checkOut(m2));
     }
 
     @Test

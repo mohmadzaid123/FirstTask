@@ -1,5 +1,6 @@
 package org.example.library.domain;
 
+import org.example.library.exceptions.MemberDidNotBorrowItemException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -30,6 +31,6 @@ class MemberBorrowReturnTest {
         Member member = new Member("M1", "Mohammad", "m@example.com");
         Book book = new Book("B1", "Clean Code", 2008, "Robert C. Martin", "9780132350884");
 
-        assertThrows(IllegalStateException.class, () -> member.returnItem(book));
+        assertThrows(MemberDidNotBorrowItemException.class, () -> member.returnItem(book));
     }
 }

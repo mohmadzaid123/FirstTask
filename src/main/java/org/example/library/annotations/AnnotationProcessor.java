@@ -2,6 +2,7 @@
 package org.example.library.annotations;
 
 import org.example.library.domain.Member;
+import org.example.library.exceptions.InvalidMemberException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
@@ -41,16 +42,24 @@ public final class AnnotationProcessor {
         InvocationHandler handler = (proxy, method, args) -> {
             Method implMethod = target.getClass().getMethod(method.getName(), method.getParameterTypes());
 
-            validateParameters(implMethod, args);
+            // ✅ validate using BOTH interface method + implementation method annotations
+            validateParameters(method, implMethod, args);
 
+            // ✅ audited can be on interface OR implementation
             Audited audited = implMethod.getAnnotation(Audited.class);
+            if (audited == null) audited = method.getAnnotation(Audited.class);
+
             if (audited != null) {
                 System.out.println("[AUDIT] action=" + audited.action()
                         + " method=" + target.getClass().getSimpleName() + "." + implMethod.getName()
                         + " args=" + (args == null ? "[]" : Arrays.toString(args)));
             }
 
-            return implMethod.invoke(target, args);
+            try {
+                return implMethod.invoke(target, args);
+            } catch (InvocationTargetException e) {
+                throw e.getCause(); // unwrap
+            }
         };
 
         return (T) Proxy.newProxyInstance(
@@ -60,26 +69,48 @@ public final class AnnotationProcessor {
         );
     }
 
-    private static void validateParameters(Method implMethod, Object[] args) {
-        Annotation[][] anns = implMethod.getParameterAnnotations();
-        if (anns.length == 0) return;
+    private static void validateParameters(Method ifaceMethod, Method implMethod, Object[] args) {
+        Annotation[][] ifaceAnns = ifaceMethod.getParameterAnnotations();
+        Annotation[][] implAnns = implMethod.getParameterAnnotations();
 
-        for (int i = 0; i < anns.length; i++) {
-            for (Annotation a : anns[i]) {
-                if (a.annotationType() == ValidMember.class) {
-                    Object val = (args == null ? null : args[i]);
+        int paramCount = Math.max(ifaceAnns.length, implAnns.length);
+        if (paramCount == 0) return;
 
-                    if (val == null) throw new IllegalArgumentException("Member is null (@ValidMember)");
-                    if (!(val instanceof Member))
-                        throw new IllegalArgumentException("@ValidMember must be on Member parameter");
+        for (int i = 0; i < paramCount; i++) {
+            boolean validMember =
+                    hasAnnotation(ifaceAnns, i, ValidMember.class) ||
+                            hasAnnotation(implAnns, i, ValidMember.class);
 
-                    Member m = (Member) val;
-                    String email = m.getEmail();
-                    if (email == null || !EMAIL.matcher(email).matches()) {
-                        throw new IllegalArgumentException("Invalid member email (@ValidMember): " + email);
-                    }
-                }
+            if (!validMember) continue;
+
+            Object val = (args == null ? null : args[i]);
+            if (!(val instanceof Member m)) {
+                throw new InvalidMemberException();
+            }
+
+            String id = m.getMemberId();
+            String name = m.getName();
+            String email = m.getEmail();
+
+            if (isBlank(id) || isBlank(name) || isBlank(email)) {
+                throw new InvalidMemberException();
+            }
+
+            if (!EMAIL.matcher(email.trim()).matches()) {
+                throw new InvalidMemberException();
             }
         }
+    }
+
+    private static boolean hasAnnotation(Annotation[][] anns, int idx, Class<? extends Annotation> type) {
+        if (anns == null || idx < 0 || idx >= anns.length) return false;
+        for (Annotation a : anns[idx]) {
+            if (a.annotationType() == type) return true;
+        }
+        return false;
+    }
+
+    private static boolean isBlank(String s) {
+        return s == null || s.trim().isEmpty();
     }
 }
